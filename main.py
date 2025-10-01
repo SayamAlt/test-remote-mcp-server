@@ -1,11 +1,16 @@
 from fastmcp import FastMCP
-import os, sqlite3
+import os, sqlite3, tempfile
+
+# Use temporary directory for database which should be writable
+TEMP_DIR = tempfile.gettempdir()
 
 # Define the path to the SQLite database
-DB_PATH = os.path.join(os.path.dirname(__file__), "expenses.db")
+DB_PATH = os.path.join(TEMP_DIR, "expenses.db")
 
 # Define the path to the categories JSON file
 CATEGORIES_PATH = os.path.join(os.path.dirname(__file__), "categories.json")
+
+print(f"Using database at: {DB_PATH}")
 
 # Create a FastMCP server instance
 mcp = FastMCP(name="Expense Tracker")
@@ -24,7 +29,7 @@ def init_db():
              )     
         ''')
 
-init_db()
+init_db() # Initialize database on startup
 @mcp.tool
 def add_expense(date: str, amount: float, category: str, subcategory: str = "", note: str = "") -> str:
     """ Add a new expense entry to the database. """
