@@ -13,7 +13,7 @@ CATEGORIES_PATH = os.path.join(os.path.dirname(__file__), "categories.json")
 print(f"Using database at: {DB_PATH}")
 
 # Create a FastMCP server instance
-mcp = FastMCP(name="Expense Tracker")
+mcp = FastMCP("Expense Tracker")
 
 def init_db(): # Initialize the database synchronously
     """ Initialize the SQLite database and create the expenses table if it doesn't exist. """
@@ -42,8 +42,8 @@ def init_db(): # Initialize the database synchronously
 # Initialize database synchronously at module load
 init_db()
 
-@mcp.tool
-async def add_expense(date: str, amount: float, category: str, subcategory: str = "", note: str = "") -> str:
+@mcp.tool()
+async def add_expense(date: str, amount: float, category: str, subcategory: str = "", note: str = "") -> dict:
     """ Add a new expense entry to the database. """
     try:
         async with aiosqlite.connect(DB_PATH) as c:
@@ -59,7 +59,7 @@ async def add_expense(date: str, amount: float, category: str, subcategory: str 
             return {"status": "error", "message": "Database is in read-only mode. Check file permissions."}
         return {"status": "error", "message": f"Database error: {str(e)}"}
 
-@mcp.tool
+@mcp.tool()
 async def list_expenses(start_date: str, end_date: str) -> list[dict]:
     """ List all expense entries from the database within an inclusive date range. """
     try:
@@ -71,7 +71,7 @@ async def list_expenses(start_date: str, end_date: str) -> list[dict]:
     except Exception as e:
         return {"status": "error", "message": f"Error listing expenses: {str(e)}"}
         
-@mcp.tool
+@mcp.tool()
 async def summarize_expenses_by_category(start_date: str, end_date: str, category: str = "") -> dict:
     """ Summarize total expenses by category within a specified date range. """
     try:
@@ -86,7 +86,7 @@ async def summarize_expenses_by_category(start_date: str, end_date: str, categor
     except Exception as e:
         return {"status": "error", "message": f"Error summarizing expenses: {str(e)}"}
     
-@mcp.tool
+@mcp.tool()
 async def delete_expense(expense_id: int) -> dict:
     """ Delete an expense entry from the database by its ID. """
     try:
@@ -97,7 +97,7 @@ async def delete_expense(expense_id: int) -> dict:
     except Exception as e:
         return {"status": "error", "message": f"Error deleting expense: {str(e)}"}
     
-@mcp.tool
+@mcp.tool()
 async def update_expense(expense_id: int, date: str, amount: float, category: str, subcategory: str = "", note: str = "") -> dict:
     """ Update an existing expense entry in the database by its ID. """
     try:
